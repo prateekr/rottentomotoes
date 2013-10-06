@@ -8,13 +8,10 @@ class MoviesController < ApplicationController
 
   def index
     @movies = Movie.all
+    @all_ratings = ['G', 'PG', 'PG-13', 'R']
     @options = params['options']
     @movies = @movies.sort_by {|movie| movie.title} if params['options'] == 'sort_by_title'
     @movies = @movies.sort_by {|movie| movie.release_date} if params['options'] == 'sort_by_date'
-  end
-
-  def new
-    # default: render 'new' template
   end
 
   def create

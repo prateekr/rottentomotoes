@@ -10,6 +10,17 @@ class MoviesController < ApplicationController
     @movies = Movie.all
     @all_ratings = Movie.get_ratings
     @options = params['options']
+
+    if session.keys.include?(:enabled_ratings) == nil
+      @all_ratings.each{|rating| params[:ratings][rating.to_sym] = 1}
+      session[:enabled_ratings] = params[:ratings]
+    else
+      session[:enabled_ratings] = params[:ratings]
+    end
+
+
+    @movies = Movie.find(:all, :conditions => ["rating IN (?)", params[:ratings].keys]) if params[:ratings] != nil
+
     @movies = @movies.sort_by {|movie| movie.title} if params['options'] == 'sort_by_title'
     @movies = @movies.sort_by {|movie| movie.release_date} if params['options'] == 'sort_by_date'
   end

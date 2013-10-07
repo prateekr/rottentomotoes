@@ -5,8 +5,38 @@
   Include:
   - @all_ratings.each do |rating|
     = rating
-    = check_box_tag "ratings[#{rating}]"
+    = check_box_tag "ratings[#{rating}]", 1, session.keys.include?(:enabled_ratings)
   = submit_tag 'Refresh'
+
+- if @enabled_ratings == nil
+  enabled ratings is nil
+- elsif @enabled_ratings.keys.length == 0
+  asdf
+- else
+  jkp;
+
+- if session[:enabled_ratings] == nil
+  enabled ratings hash is nil
+- elsif session[:enabled_ratings].keys.length == 0
+  asdf
+- else
+  jkp;
+
+%table#movies
+  %thead
+    %tr
+      %th= "asdf"
+  %tbody
+    -if @enabled_ratings != nil
+      - @enabled_ratings.each do |rating|
+        %tr
+          %td= rating
+    %tr
+      %td session hash
+    -if session[:enabled_ratings] != nil
+      - session[:enabled_ratings].each do |rating|
+        %tr
+          %td= rating
 
 %table#movies
   %thead
@@ -31,12 +61,5 @@
         %td= movie.rating
         %td= movie.release_date
         %td= link_to "More about #{movie.title}", movie_path(movie)
-    -form_tag
-    - @all_ratings.each do |rating|
-      %tr
-        %td=rating
-        %td=rating
-        %td=rating
-        %td=rating
 
 = link_to 'Add new movie', new_movie_path

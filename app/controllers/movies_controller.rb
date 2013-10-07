@@ -9,20 +9,27 @@ class MoviesController < ApplicationController
   def index
     @movies = Movie.all
     @all_ratings = Movie.get_ratings
-    @options = params['options']
 
-    if session.keys.include?(:enabled_ratings) == nil
-      @all_ratings.each{|rating| params[:ratings][rating.to_sym] = 1}
-      session[:enabled_ratings] = params[:ratings]
+    #Retrieve attribute to filter by
+    if params['options'] == nil
+      @options = session[:sorting_option]
     else
+      @options = params['options']
+      session[:sorting_option] = params['options']
+    end
+
+    #Retrieve ratings to filter by
+    if session[:enabled_ratings] == nil
+      session[:enabled_ratings] = Hash.new
+      @all_ratings.each{|rating| session[:enabled_ratings][rating] = 1}
+    elsif params[:ratings] != nil
       session[:enabled_ratings] = params[:ratings]
     end
 
+    @movies = Movie.find(:all, :conditions => ["rating IN (?)", session[:enabled_ratings].keys])
 
-    @movies = Movie.find(:all, :conditions => ["rating IN (?)", params[:ratings].keys]) if params[:ratings] != nil
-
-    @movies = @movies.sort_by {|movie| movie.title} if params['options'] == 'sort_by_title'
-    @movies = @movies.sort_by {|movie| movie.release_date} if params['options'] == 'sort_by_date'
+    @movies = @movies.sort_by {|movie| movie.title} if @options == 'sort_by_title'
+    @movies = @movies.sort_by {|movie| movie.release_date} if @options == 'sort_by_date'
   end
 
   def create
